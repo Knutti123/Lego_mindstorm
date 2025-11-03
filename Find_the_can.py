@@ -115,13 +115,9 @@ def follow_line():
         right_latest = False
 
 def open_close_servo():
-    Motor_servo.duty_cycle_sp = base_speed_servo
-    sleep(3.4)
-    Motor_servo.duty_cycle_sp = 0
-    sleep(0.2)
-    Motor_servo.duty_cycle_sp = -base_speed_servo
-    sleep(3.4)
-    Motor_servo.duty_cycle_sp = 0
+    open_servo()
+    sleep(0.5)
+    close_servo()
 
 def open_servo():
     Motor_servo.duty_cycle_sp = base_speed_servo
@@ -167,12 +163,12 @@ def data_processing(data,precentage,acceptance_rate):
     threshold = data[percentage_take]
     return threshold, acceptance
 
-def move_while_searching():
+def move_while_searching(grip_distance=5):
     while True:
         Motor_left.duty_cycle_sp = abs(forward_search_speed_left)
         Motor_right.duty_cycle_sp = abs(forward_search_speed_right)
-        sleep(0.3)
-        if ultrasonic_sensor.distance_centimeters < 6:
+        sleep(0.1)
+        if ultrasonic_sensor.distance_centimeters < grip_distance:
             stop_motors()
             break
 
@@ -195,19 +191,22 @@ def intial_can_guess_movement(threshold,acceptance_target):
 
 def search():
     area_data = scan_area(1*1.5,1.8*1.5)
-    #print("Area data: ", area_data)
+    print("Area data: ", area_data)
     print(min(area_data),max(area_data))
-    processed_threshold, acceptance_target = data_processing(data=area_data,precentage=0.3,acceptance_rate=0.09)
+    processed_threshold, acceptance_target = data_processing(data=area_data,precentage=0.3,acceptance_rate=0.11)
     print("Threshold set to: ", processed_threshold)
     print("Acceptance target set to: ", acceptance_target)
     intial_can_guess_movement(processed_threshold,acceptance_target)
-    move_while_searching()
+    move_while_searching(grip_distance=5)
     close_servo()
+    sleep(0.2)
+    lift_up()
+    sleep(0.2)
     move_forward()
     sleep(1)
     stop_motors()
 
-#open_servo()
-lift_up()
-lift_down()
-
+open_servo()
+#lift_up()
+#lift_down()
+#search()

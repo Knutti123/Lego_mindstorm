@@ -93,15 +93,7 @@ def search():
     Motor_right.duty_cycle_sp = abs(base_speed_right)
     sleep(0.3)
 
-def rescue():
-    if touch_sensor.is_pressed:
-        sound.speak("Rescue")
-        Motor_left.duty_cycle_sp = -base_speed_left
-        Motor_right.duty_cycle_sp = -base_speed_right
-        sleep(1)
-        Motor_left.duty_cycle_sp = turn_speed_left
-        Motor_right.duty_cycle_sp = abs(base_speed_right)
-        sleep(0.5)
+
 
 def return_to_line():
     while color_sensor_left.color != 6 and color_sensor_right.color != 6:
