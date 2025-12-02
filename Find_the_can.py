@@ -33,9 +33,9 @@ base_speed_lift_up = -80
 
 btn = ev3.Button()
 Motor_left = ev3.LargeMotor('outA')
-Motor_right = ev3.LargeMotor('outC')
+Motor_right = ev3.LargeMotor('outD')
 Motor_servo = ev3.MediumMotor('outB')
-Motor_lift = ev3.LargeMotor('outD')
+Motor_lift = ev3.LargeMotor('outC')
 color_sensor_left = ev3.ColorSensor('in1')
 color_sensor_right = ev3.ColorSensor('in4')
 ultrasonic_sensor = ev3.UltrasonicSensor('in3')
@@ -121,12 +121,12 @@ def open_close_servo():
 
 def open_servo():
     Motor_servo.duty_cycle_sp = base_speed_servo
-    sleep(3.4)
+    sleep(3.1)
     Motor_servo.duty_cycle_sp = 0
 
 def close_servo():
     Motor_servo.duty_cycle_sp = -base_speed_servo
-    sleep(3.4)
+    sleep(3.3)
     Motor_servo.duty_cycle_sp = 0
 
 
@@ -206,7 +206,12 @@ def search():
     sleep(1)
     stop_motors()
 
-open_servo()
+#open_servo()
 #lift_up()
 #lift_down()
 #search()
+
+#open_servo()
+#sleep(0.5)
+#close_servo()
+#lift_up()

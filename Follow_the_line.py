@@ -12,17 +12,17 @@ sound = Sound()
 threshold_left = 30
 threshold_right = 350
 # Speed settings for motors (+ is forward, - is backward)
-base_speed_right = -35
+base_speed_right = -30
 base_speed_left = base_speed_right-2
-turn_speed_right = -90
+turn_speed_right = -100
 turn_speed_left = turn_speed_right-2
 color = ('unknown', 'black', 'blue', 'green', 'yellow', 'red', 'white', 'brown')
 
 btn = ev3.Button()
 Motor_left = ev3.LargeMotor('outA')
-Motor_right = ev3.LargeMotor('outC')
+Motor_right = ev3.LargeMotor('outD')
 Motor_servo = ev3.MediumMotor('outB')
-Motor_lift = ev3.LargeMotor('outD')
+Motor_lift = ev3.LargeMotor('outC')
 color_sensor_left = ev3.ColorSensor('in1')
 color_sensor_right = ev3.ColorSensor('in4')
 ultrasonic_sensor = ev3.UltrasonicSensor('in3')
@@ -46,47 +46,30 @@ Motor_right.run_direct()
 left_latest = False
 right_latest = False
 
-def turn_left():
-    Motor_right.duty_cycle_sp = turn_speed_right
-    Motor_left.duty_cycle_sp = abs(base_speed_left)
-
 
 def turn_right():
-    Motor_left.duty_cycle_sp = turn_speed_left
-    Motor_right.duty_cycle_sp = abs(base_speed_right)
+    l = color_sensor_left.reflected_light_intensity
+    duty = int(turn_speed_left * (1.2 - (l / 100.0)))
+    duty = max(-100, min(100, duty))
+    Motor_left.duty_cycle_sp = duty
+    Motor_right.duty_cycle_sp = abs(base_speed_right)+20
 
 
-def reset_gyro():
-    gyro_sensor.mode = 'GYRO-RATE'
-    sleep(0.1)
-    gyro_sensor.mode = 'GYRO-ANG'
-    sleep(0.1)
-
-angle_list = []
+def turn_left():
+    l = color_sensor_right.reflected_light_intensity
+    duty = int(turn_speed_right * (1.2 - (l / 100.0)))
+    duty = max(-100, min(100, duty))
+    Motor_right.duty_cycle_sp = duty
+    Motor_left.duty_cycle_sp = abs(base_speed_left)+20
 
 while True:
-        if color_sensor_left.color != 2 and color_sensor_right.color != 2:
-            if left_latest:
-                Motor_right.duty_cycle_sp = turn_speed_right
-            elif right_latest:
-                Motor_left.duty_cycle_sp = turn_speed_left
-            else:
-                Motor_left.duty_cycle_sp = turn_speed_left
-                Motor_right.duty_cycle_sp = turn_speed_right
-                sleep(0.01)
-        elif color_sensor_left.color != 2:
-            turn_left()
-            left_latest = True
-            last_seen_time = time.time()
-        elif color_sensor_right.color != 2:
-            turn_right()
-            right_latest = True
-            last_seen_time = time.time()
-        else:
-            Motor_left.duty_cycle_sp = base_speed_left
-            Motor_right.duty_cycle_sp = base_speed_right
-            left_latest = False
-            right_latest = False
+    if color_sensor_left.reflected_light_intensity - color_sensor_right.reflected_light_intensity > 6:
+        turn_right()
+    elif color_sensor_right.reflected_light_intensity - color_sensor_left.reflected_light_intensity > 6:
+        turn_left()
+    else:
+        Motor_left.duty_cycle_sp = base_speed_left
+        Motor_right.duty_cycle_sp = base_speed_right
 
 
 
