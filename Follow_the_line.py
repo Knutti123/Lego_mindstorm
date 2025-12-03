@@ -62,6 +62,9 @@ def turn_left():
     Motor_right.duty_cycle_sp = duty
     Motor_left.duty_cycle_sp = abs(base_speed_left)+20
 
+
+Motor_lift.stop(stop_action="hold")
+
 while True:
     if color_sensor_left.reflected_light_intensity - color_sensor_right.reflected_light_intensity > 6:
         turn_right()
